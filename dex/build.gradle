@@ -1,0 +1,22 @@
+apply plugin: 'java'
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+def dxCommand = '/Users/arget/Library/Android/sdk/build-tools/27.0.3/dx'
+
+task dex(type: Exec, dependsOn: classes) {
+    workingDir 'build/classes/java/main'
+    commandLine(dxCommand, '--dex', '--output=parser.dex', 'parser/Parser.class')
+}
+
+task makeDex(type: Copy, dependsOn: dex) {
+    from ('build/classes/java/main/') {
+        include '*.dex'
+    }
+    into '../sample/src/main/assets'
+}
