@@ -258,7 +258,7 @@ public class Dex {
 
     public static class Params {
 
-        ContextWrapper context;
+        Context context;
 
         /**
          * File name with extension. Sample: "file.instance"
@@ -276,7 +276,7 @@ public class Dex {
         String downloadFileName;
 
 
-        public Params(ContextWrapper context, String fileName, String md5AssetsFile, String downloadFileName) {
+        public Params(Context context, String fileName, String md5AssetsFile, String downloadFileName) {
             this.context = context;
             this.fileName = fileName;
             this.md5AssetsFile = md5AssetsFile;

@@ -42,7 +42,7 @@ public class Utils {
      * @param fileName - File name with extension. Sample: "file.dex"
      * @return full name file Sample: "/data/user/0/ua.com.arget.dex_worker/app_dex/file.dex"
      */
-    public static String getFileFullName(ContextWrapper context, String fileName) {
+    public static String getFileFullName(Context context, String fileName) {
         return context.getDir("dex", Context.MODE_PRIVATE) + "/" + fileName;
     }
 
@@ -98,7 +98,7 @@ public class Utils {
      * @param fileName - file name, sample "file.dex"
      * @return true - if exist, false - if not exist.
      */
-    public static boolean isExists(ContextWrapper context, String fileName) {
+    public static boolean isExists(Context context, String fileName) {
         return new File(getFileFullName(context, fileName)).exists();
     }
 
@@ -159,14 +159,10 @@ public class Utils {
     public static void downloadFileAsync(String fromUrl, String toFullFileName, String md5, Handler handler, ToDoInterface success, ToDoInterface failure) {
         Utils.runInNewThread(() -> {
 
-            AtomicBoolean result = new AtomicBoolean(false);
-
-            if (Utils.downloadFile(fromUrl, toFullFileName))  {
-                result.set(md5.equals(Utils.getMD5(toFullFileName)));
-            }
+            Boolean result = Utils.downloadFile(fromUrl, toFullFileName, md5);
 
             handler.post(() -> {
-                if (result.get()) {
+                if (result) {
                     if (success != null) success.todo();
                 } else {
                     if (failure != null) failure.todo();
@@ -177,12 +173,22 @@ public class Utils {
 
 
     /**
+     * Like {@link #downloadFile(String fromUrl, String toFullFileName, String md5)}
+     * with {@code md5 = null} for downloading without checking md5
+     */
+    public static boolean downloadFile(String fromUrl, String toFullFileName) {
+        return downloadFile(fromUrl, toFullFileName , null);
+    }
+
+
+    /**
      * Download file (sync) by url in {@code fromUrl} to file by path in {@code toFullFileName}
      * @param fromUrl - direct link to file download file
      * @param toFullFileName - path to download and save the file
+     * @param md5 - expected hash of the downloading file
      * @return boolean result of operation, true - successfully downloaded, false - download error.
      */
-    public static boolean downloadFile(String fromUrl, String toFullFileName) {
+    public static boolean downloadFile(String fromUrl, String toFullFileName, String md5) {
 
         boolean result = false;
         InputStream input = null;
@@ -207,13 +213,17 @@ public class Utils {
 
             connection.disconnect();
             result = true;
-        } catch (Throwable throwable) { throwable.printStackTrace();//TODO
+        } catch (Throwable throwable) {
             if (isExists(toFullFileName)) new File(toFullFileName).delete();
         } finally {
             closeQuietly(output, input);
         }
 
-        return result;
+        if (md5 != null && result) {
+            return md5.equals(Utils.getMD5(toFullFileName));
+        } else {
+            return result;
+        }
     }
 
     /**
