@@ -293,7 +293,7 @@ public class Dex {
         String downloadFileName;
 
 
-        public Params(ContextWrapper context, String fileName, int fileVersion, String md5AssetsFile, String downloadFileName) {
+        public Params(Context context, String fileName, int fileVersion, String md5AssetsFile, String downloadFileName) {
             this.context = context;
             this.fileName = fileName;
             this.fileVersion = fileVersion;
