@@ -302,7 +302,7 @@ public class Dex {
         }
 
 
-        public Params setContext(ContextWrapper context) {
+        public Params setContext(Context context) {
             this.context = context;
             return this;
         }
