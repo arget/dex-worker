@@ -35,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(LAYOUT);
 
         // Init params for Dex
-        Dex.Params params = new Dex.Params(MainActivity.this, FILE_NAME, BuildConfig.MD5_DEX_ASSETS, DOWNLOADED_FILE_NAME);
+        int dexVersion = 1; // Version dex file, which located in assets
+        Dex.Params params = new Dex.Params(MainActivity.this, FILE_NAME, dexVersion, BuildConfig.MD5_DEX_ASSETS, DOWNLOADED_FILE_NAME);
         Handler handler = new Handler(Looper.getMainLooper());
 
         // Prepare dex file

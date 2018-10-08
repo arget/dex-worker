@@ -99,6 +99,18 @@ public class Dex {
             prepared = false;
             if (Utils.isExists(params.context, params.fileName)) {
                 prepared = true;
+
+                try {
+
+                    if (params.fileVersion > getInstanceClassFromDex("parser.Parser").getVersion()) {
+                        reset();
+
+                        new File(Utils.getFileFullName(params.context, params.fileName)).delete();
+                        if (Utils.copyAssets(params.context, params.fileName, Utils.getFileFullName(params.context, params.fileName))) {
+                            prepared = params.md5AssetsFile.equals(Utils.getMD5(Utils.getFileFullName(params.context, params.fileName)));
+                        }
+                    }
+                } catch (Throwable ignored) { }
             } else {
                 if (Utils.copyAssets(params.context, params.fileName, Utils.getFileFullName(params.context, params.fileName))) {
                     prepared = params.md5AssetsFile.equals(Utils.getMD5(Utils.getFileFullName(params.context, params.fileName)));
@@ -266,6 +278,11 @@ public class Dex {
         String fileName;
 
         /**
+         * File version with extension. Sample: "file.instance"
+         */
+        int fileVersion;
+
+        /**
          * MD5 hash of the file in assets
          */
         String md5AssetsFile;
@@ -276,9 +293,10 @@ public class Dex {
         String downloadFileName;
 
 
-        public Params(Context context, String fileName, String md5AssetsFile, String downloadFileName) {
+        public Params(ContextWrapper context, String fileName, int fileVersion, String md5AssetsFile, String downloadFileName) {
             this.context = context;
             this.fileName = fileName;
+            this.fileVersion = fileVersion;
             this.md5AssetsFile = md5AssetsFile;
             this.downloadFileName = downloadFileName;
         }
@@ -291,6 +309,11 @@ public class Dex {
 
         public Params setFileName(String fileName) {
             this.fileName = fileName;
+            return this;
+        }
+
+        public Params setFileVersion(int fileVersion) {
+            this.fileVersion = fileVersion;
             return this;
         }
 
